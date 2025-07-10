@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CSV Dashboard from Google Drive</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background: #f4f6f9;
+    }
+    h2 {
+      text-align: center;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    th, td {
+      padding: 10px;
+      border: 1px solid #ccc;
+      text-align: left;
+    }
+    th {
+      background-color: #007BFF;
+      color: white;
+      position: sticky;
+      top: 0;
+    }
+    .table-container {
+      max-height: 500px;
+      overflow-y: auto;
+      margin-top: 20px;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>📊 CSV Data from Google Drive</h2>
+  <div class="table-container" id="table-container">Loading...</div>
+
+  <script>
+    const driveFileId = '1hhBD10fbtvuBkLiBXyBIR3eNMDAqTKgk'; // your file ID
+    const downloadUrl = `https://drive.google.com/uc?export=download&id=${driveFileId}`;
+
+    fetch(downloadUrl)
+      .then(response => response.text())
+      .then(csvText => {
+        const rows = csvText.trim().split('\n').map(row => row.split(','));
+        const table = document.createElement('table');
+
+        rows.forEach((row, index) => {
+          const tr = document.createElement('tr');
+          row.forEach(cell => {
+            const cellTag = index === 0 ? 'th' : 'td';
+            const td = document.createElement(cellTag);
+            td.textContent = cell;
+            tr.appendChild(td);
+          });
+          table.appendChild(tr);
+        });
+
+        document.getElementById('table-container').innerHTML = '';
+        document.getElementById('table-container').appendChild(table);
+      })
+      .catch(error => {
+        document.getElementById('table-container').innerHTML = `<p style="color:red;">❌ Error loading CSV: ${error.message}</p>`;
+        console.error(error);
+      });
+  </script>
+
+</body>
+</html>
